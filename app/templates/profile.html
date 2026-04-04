@@ -1,0 +1,95 @@
+{% extends "layout.html" %}
+{% block title %} {{ user.username }}'s Profile {% endblock %}
+
+{% block content %}
+    <h2>{{ user.username }}'s Profile</h2>
+    <div style="width: clamp(120px, 20vw, 250px); height: clamp(120px, 20vw, 250px);" class="mx-auto">
+    <img src="{{ url_for('static', filename='profile_pic.png') }}"
+         alt="Profile image"
+         class="w-100 h-100 rounded-circle"
+         style="object-fit: cover;">
+    </div>
+    <div class="card h-100 shadow-sm m3 mb-4 border-success">
+                <div class="card-body">
+                    <h5 class="card-title text-white fw-bold">{{ user.username }}</h5>
+                    <p class="card-text"><span style="color: #00ff41;">ID :-</span> {{ user.id }}</p>
+                    <p class="card-text"><span style="color: #00ff41;">Mail :-</span> {{ user.email }}</p>
+                    <p class="card-text"><span style=" color: #00ff41;">Grade :-</span> To Be Added </p>
+                    <p class="card-text"><span style=" color: #00ff41;">Description :-</span> To Be Added </p>
+
+                </div>
+    </div>
+
+    <h2>{{ user.username }}'s Encounters</h2>
+
+    {% if encounters.items %}
+        <div class="row ">
+        {% for encounter in encounters.items %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 shadow-sm border-success">
+                    <div class="card-body">
+                        <h5 class="card-title text-white fw-bold">{{ encounter.title }}</h5>
+                        <p class="card-text"><span style="color: #00ff41;">Grade:</span> {{ encounter.grade }}</p>
+                        <p class="card-text"><span style="color: #00ff41;">Location:</span> {{ encounter.location }}</p>
+                        <p class="card-text"><span style="color: #00ff41;">Description:</span> {{ encounter.description }}</p>
+                    </div>
+                    <div class="card-footer bg-black border-success">
+                        <form method="POST" action="{{ url_for('main.delete_encounter', encounter_id=encounter.id) }}" style="display: inline;">
+                            <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to delete this encounter?')">Delete</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('main.edit_encounter', encounter_id=encounter.id) }}" style="display: inline;">
+                            <button type="submit" class="btn btn-outline-primary btn-sm">Edit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Encounter pagination">
+            <ul class="pagination justify-content-center">
+                {% if encounters.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link bg-black text-success border-success" href="{{ url_for('main.user_encounters', username=user.username, page=encounters.prev_num) }}">Previous</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link bg-black text-secondary border-success">Previous</span>
+                    </li>
+                {% endif %}
+
+                {% for page_num in encounters.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                    {% if page_num %}
+                        {% if encounters.page == page_num %}
+                            <li class="page-item active">
+                                <span class="page-link bg-success text-black border-success">{{ page_num }}</span>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link bg-black text-success border-success" href="{{ url_for('main.user_encounters', username=user.username, page=page_num) }}">{{ page_num }}</a>
+                            </li>
+                        {% endif %}
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link bg-black text-secondary border-success">...</span>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if encounters.has_next %}
+                    <li class="page-item">
+                        <a class="page-link bg-black text-success border-success" href="{{ url_for('main.user_encounters', username=user.username, page=encounters.next_num) }}">Next</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link bg-black text-secondary border-success">Next</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% else %}
+        <p class="text-muted">No encounters submitted yet.</p>
+        <a href="{{ url_for('main.new_encounter') }}" class="btn btn-outline-success">Submit Your First Encounter</a>
+    {% endif %}
+{% endblock %}

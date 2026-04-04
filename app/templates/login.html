@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block content %}
+        <h2>Login</h2>
+        <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.email.label(class="form-control-label") }}
+            {{ form.email(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.password.label(class="form-control-label") }}
+            {{ form.password(class="form-control") }}
+        </div>  
+        <button type="submit" class="btn btn-outline-success">Login</button>
+        <small class="form-text text-muted">
+            <a href="'#"> Forgot Password?</a>
+        </small>
+    </form>
+    <div class="border-top mt-4 pt-3">
+        <p>Don't have an account? <a href="{{ url_for('main.register') }}">Register here</a>.</p>
+    </div>
+{% endblock %}

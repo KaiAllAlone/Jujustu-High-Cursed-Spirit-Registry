@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+
+{% block title %}Curse Registry{% endblock %}
+
+{% block content %}
+    <h1>Welcome to the Home Page!</h1>
+    <div class="row">
+    {% for encounter in encounters %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Card image">
+                <div class="card-body">
+                    <h5 class="card-title text-white fw-bold">{{ encounter.title }}</h5>
+                    <p class="card-text"><span style="color: #00ff41;">ID :-</span> {{ encounter.id }}</p>
+                    <p class="card-text"><span style="color: #00ff41;">Location :-</span> {{ encounter.location}}</p>
+                    <p class="card-text"><span style=" color: #00ff41;">Type :-</span> {{ encounter.grade }}</p>
+                    <p class="card-text"><span style=" color: #00ff41;">Date :-</span> To be Added</p>
+                    <p class="card-text"><span style=" color: #00ff41;">Description :-</span> {{ encounter.description }}</p>
+                    <footer>
+                        <p class="card-text"><span style="color: #00ff41;">Encountered By :-</span> 
+                            <a href="{{ url_for('main.profile', username=encounter.user.username) }}">{{ encounter.user.username }}</a>
+                        </p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+
+    {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    <nav aria-label="Encounter pagination">
+        <ul class="pagination justify-content-center">
+            {% if encounters.has_prev %}
+                <li class="page-item">
+                    <a class="page-link bg-black text-success border-success" href="{{ url_for('main.home', page=encounters.prev_num) }}">Previous</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link bg-black text-secondary border-success">Previous</span>
+                </li>
+            {% endif %}
+
+            {% for page_num in encounters.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                {% if page_num %}
+                    {% if encounters.page == page_num %}
+                        <li class="page-item active">
+                            <span class="page-link bg-success text-black border-success">{{ page_num }}</span>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link bg-black text-success border-success" href="{{ url_for('main.home', page=page_num) }}">{{ page_num }}</a>
+                        </li>
+                    {% endif %}
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link bg-black text-secondary border-success">...</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if encounters.has_next %}
+                <li class="page-item">
+                    <a class="page-link bg-black text-success border-success" href="{{ url_for('main.home', page=encounters.next_num) }}">Next</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link bg-black text-secondary border-success">Next</span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    <p>This is the home page of our Flask application. Feel free to explore the about and contact pages.</p>
+{% endblock %}

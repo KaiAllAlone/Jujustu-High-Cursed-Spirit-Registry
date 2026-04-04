@@ -1,0 +1,395 @@
+body{
+    background-color:#0b0b0b;
+    position: relative;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* CRT Effects Container */
+.crt-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+/* CRT Scanline Effect - Horizontal lines */
+.scanlines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.25) 0px,
+        rgba(0, 0, 0, 0.25) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    animation: 
+        crt-flicker 0.12s infinite,
+        crt-glitch 0.2s infinite;
+}
+
+/* CRT Vignette - Darkened corners for curved screen effect */
+@keyframes vignettePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.96; }
+}
+
+.vignette {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9998;
+
+    /* Core CRT vignette layers */
+    background:
+        /* Outer heavy falloff */
+        radial-gradient(
+            ellipse at center,
+            rgba(0, 0, 0, 0) 45%,
+            rgba(0, 0, 0, 0.25) 65%,
+            rgba(0, 0, 0, 0.55) 85%,
+            rgba(0, 0, 0, 0.85) 100%
+        ),
+
+        /* Mid curvature shadow */
+        radial-gradient(
+            ellipse at center,
+            rgba(0, 0, 0, 0) 60%,
+            rgba(0, 0, 0, 0.15) 75%,
+            rgba(0, 0, 0, 0.35) 100%
+        ),
+
+        /* Subtle phosphor glow tint */
+        radial-gradient(
+            ellipse at center,
+            rgba(0, 255, 120, 0.035) 0%,
+            rgba(0, 0, 0, 0) 70%
+        );
+
+
+    /* Subtle breathing */
+    animation: vignettePulse 6s infinite ease-in-out;
+}
+
+/* CRT screen flicker - combined scanline and brightness flicker */
+@keyframes crt-flicker {
+    0%   { opacity: 0.9; filter: brightness(1) ; }
+    5%   { opacity: 0.5; filter: brightness(1.2) ; }
+    10%  { opacity: 0.9; filter: brightness(1) ; }
+    15%  { opacity: 0.3; filter: brightness(0.8) ; }
+    20%  { opacity: 1.0; filter: brightness(1.5) ; } 
+    25%  { opacity: 0.8; filter: brightness(1) ; }
+    30%  { opacity: 0.4; filter: brightness(0.9) ; }
+    35%  { opacity: 0.9; filter: brightness(1) ; }
+    40%  { opacity: 0.2; filter: brightness(0.5) ; } 
+    45%  { opacity: 1.0; filter: brightness(1.2) ; }
+    50%  { opacity: 0.8; filter: brightness(1) ; }
+    55%  { opacity: 0.9; filter: brightness(1.1) ; }
+    60%  { opacity: 0.3; filter: brightness(0.7) ; }
+    65%  { opacity: 1.0; filter: brightness(1.4) ; }
+    70%  { opacity: 0.7; filter: brightness(1) ; }
+    75%  { opacity: 0.9; filter: brightness(1) ; }
+    80%  { opacity: 0.2; filter: brightness(0.6) ; }
+    85%  { opacity: 1.0; filter: brightness(1.3) ; }
+    90%  { opacity: 0.5; filter: brightness(0.9) ; }
+    95%  { opacity: 0.9; filter: brightness(1) ; }
+    100% { opacity: 0.9; filter: brightness(1) ; }
+}
+
+@keyframes crt-glitch {
+    0%   { transform: translate(0) skew(0deg); text-shadow: 0 0 0 transparent; filter: brightness(1); }
+    2%   { transform: translate(-4px, 2px) skew(2deg); text-shadow: -3px 0 rgba(255,0,0,0.8), 3px 0 rgba(0,255,255,0.8); filter: brightness(1.5); }
+    4%   { transform: translate(4px, -2px) skew(-2deg); text-shadow: 3px 0 rgba(255,0,0,0.8), -3px 0 rgba(0,255,255,0.8); filter: brightness(0.8); }
+    6%   { transform: translate(0) skew(0deg); text-shadow: 0 0 0 transparent; filter: brightness(1); }
+    50%  { transform: translate(0) skew(0deg); text-shadow: 0 0 0 transparent; } /* Long pause of normalcy */
+    52%  { transform: translate(-2px, -1px) skew(-1deg); text-shadow: -2px 0 rgba(255,0,0,0.8), 2px 0 rgba(0,255,255,0.8); filter: brightness(1.2); }
+    54%  { transform: translate(0) skew(0deg); text-shadow: 0 0 0 transparent; filter: brightness(1); }
+    100% { transform: translate(0) skew(0deg); text-shadow: 0 0 0 transparent; }
+}
+
+/* Apply flicker to entire screen */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.08);
+    pointer-events: none;
+    z-index: 9997;
+    animation: 
+        crt-flicker 0.12s infinite,
+        crt-glitch 0.2s infinite;
+}
+
+
+
+/* FONT */
+
+.scp-font{
+    font-family: "Share Tech Mono", monospace;
+}
+
+.blinking-cursor {
+    animation-name: blink;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-timing-function: step-start;
+    padding: 2px 6px;
+    border-radius: 3px;
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.8),
+                0 0 20px rgba(0, 255, 65, 0.4);
+}
+
+@keyframes blink {
+    0% { opacity: 1; background-color: #00ff41; color: white; box-shadow: 0 0 15px rgba(0, 255, 65, 1); }
+    50% { opacity: 1; color: #00ff41; background-color: #0b0b0b; box-shadow: 0 0 5px rgba(0, 255, 65, 0.5); }
+    100% { opacity: 1; background-color: #00ff41; color: white; box-shadow: 0 0 15px rgba(0, 255, 65, 1); }
+}
+
+/* Footer Styles */
+footer {
+    background: #0a0a0a;
+    border-top: 1px solid rgba(0, 255, 65, 0.5);
+    box-shadow: 0 -5px 30px rgba(0, 255, 65, 0.1);
+}
+
+footer p {
+    letter-spacing: 1px;
+}
+
+footer .text-danger {
+    text-shadow: 0 0 10px rgba(0, 255, 65, 0.8);
+}
+
+.content-box{
+    background:#111;
+    border: 1px solid #333;
+    border-left: 4px solid #00ff41;
+    border-radius: 8px;
+    /* box-shadow: 0 0 40px rgba(0, 255, 65, 0.15),
+                0 0 80px rgba(0, 255, 65, 0.05),
+                inset 0 0 30px rgba(0, 255, 65, 0.03); */
+    position: relative;
+    overflow: hidden;
+}
+
+.content-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.8), transparent);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+}
+
+/* Alert Styles */
+.alert-danger {
+    background: rgba(0, 255, 65, 0.1);
+    border: 1px solid #00ff41;
+    color: #7aff93;
+}
+
+.alert-success {
+    background: rgba(0, 255, 65, 0.15);
+    border: 1px solid #00ff41;
+    color: #7aff93;
+}
+
+.alert-icon {
+    margin-right: 8px;
+}
+.card-body{
+    background:#111;
+    border:1px solid #222;
+    border-left:4px solid rgba(0, 255, 65, 0.5);
+    border-radius:6px;
+    box-shadow: 0 0 30px rgba(0, 255, 65, 0.15),
+                0 0 60px rgba(0, 255, 65, 0.08);
+}
+.card-text{
+    color:#fff;
+}
+.card-title{
+    background-color: rgba(0, 255, 65, 0.5);
+    color: white;
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+}
+
+
+/* NAVBAR */
+
+.navbar{
+    backdrop-filter: blur(6px);
+    height: 4.5rem;
+    border-bottom: 1px solid rgba(0, 255, 65, 0.5) !important;
+    box-shadow: 0 0 30px rgba(0, 255, 65, 0.3),
+                0 2px 20px rgba(0, 255, 65, 0.2);
+}
+
+.navbar-nav {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-brand {
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px rgba(0, 255, 65, 0.8),
+                 0 0 20px rgba(0, 255, 65, 0.4),
+                 0 0 30px rgba(0, 255, 65, 0.2);
+}
+
+.nav-icon {
+    color: #00ff41;
+    margin-right: 6px;
+    font-size: 0.8em;
+    text-shadow: 0 0 8px rgba(0, 255, 65, 0.6);
+}
+
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+}
+
+.nav-link:hover {
+    color: #4aff7a !important;
+    text-shadow: 0 0 10px rgba(74, 255, 122, 0.8),
+                 0 0 20px rgba(74, 255, 122, 0.4);
+}
+
+.btn-outline-danger {
+    border-width: 2px;
+   
+}
+
+.btn-outline-danger:hover {
+    background: #c20505;
+    color: #ffffff;
+}
+
+.dropdown{
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.dropdown-menu{
+    background: black;
+    border: 1px solid #00ff41;
+    padding: 6px;
+    /* box-shadow: 0 0 20px rgba(0, 255, 65, 0.3),
+                0 0 40px rgba(0, 255, 65, 0.1); */
+}
+
+.dropdown-item{
+    color: white;
+}
+
+.dropdown-item:hover{
+    background:#111;
+    color:#00ff41;
+}
+
+
+/* LINKS */
+
+.nav-link{
+    transition: 0.1s ease;
+}
+
+
+/* SEARCH BAR */
+
+.form-control{
+    background:#111;
+    border:1px solid #333;
+    transition: all 0.1s ease;
+}
+
+.form-control:focus{
+    border-color:#00ff41;
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.4),
+                0 0 30px rgba(0, 255, 65, 0.2);
+    outline: none;
+}
+
+
+/* BUTTON */
+.btn-outline-danger{
+    border-width: 2px;
+}
+
+.btn-white {
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+}
+
+.btn-white:hover {
+  background-color: black;
+  color: white;
+}
+
+/* Sharp edges - no rounded corners anywhere */
+* {
+    border-radius: 0 !important;
+}
+
+/* Override Bootstrap text-danger - make it green instead of red */
+.text-danger {
+    color: #00ff41 !important;
+}
+
+/* Label text inside cards - make them green terminal style */
+.card-body strong,
+.card-body b,
+.card-body label {
+    color: #00ff41 !important;
+}
+
+/* Override Bootstrap border-danger */
+.border-danger {
+    border-color: #00ff41 !important;
+}
+
+/* Override Bootstrap btn-danger */
+.btn-danger {
+    background-color: #00ff41;
+    border-color: #00ff41;
+    color: #000;
+}
+
+.btn-danger:hover {
+    background-color: #4aff7a;
+    border-color: #4aff7a;
+    color: #000;
+}
+
+/* Override Bootstrap bg-danger */
+.bg-danger {
+    background-color: #00ff41 !important;
+}
+
+/* Dropdown divider */
+.dropdown-divider {
+    border-top: 1px solid rgba(0, 255, 65, 0.5) !important;
+}
+
+/* Navbar toggler icon color */
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(0, 255, 65, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
