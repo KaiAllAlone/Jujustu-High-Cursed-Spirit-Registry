@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, url_for, redirect, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 import os
 import json
-from app import db, Entries, login_manager
+from app import db, login_manager
 from app.models import User, Encounter
 from app.forms import RegistrationForm, LoginForm, EncounterForm
 
